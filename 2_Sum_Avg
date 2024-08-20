@@ -1,0 +1,48 @@
+package com.example.a2_sum_avg;
+
+import android.os.Bundle;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import android.widget.TextView;
+import android.widget.EditText;
+import android.view.View;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+    }
+    public void calculate(View view)
+    {
+        EditText editText=findViewById(R.id.et1);
+        String n1= editText.getText().toString();
+        EditText editText1=findViewById(R.id.et2);
+        String n2=editText1.getText().toString();
+        EditText editText2=findViewById(R.id.et3);
+        String n3=editText2.getText().toString();
+        int num1=Integer.parseInt(n1);
+        int num2=Integer.parseInt(n2);
+        int num3=Integer.parseInt(n3);
+        int s=num1+num2+num3;
+        int a=s/3;
+        String sum=String.valueOf(s);
+        String avg=String.valueOf(a);
+        TextView textView=findViewById(R.id.tv2);
+        textView.setText(sum);
+        TextView textView1=findViewById(R.id.tv4);
+        textView1.setText(avg);
+    }
+}
