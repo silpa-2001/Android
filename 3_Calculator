@@ -20,14 +20,6 @@ private int num2;
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-
-        EditText editText=findViewById(R.id.et1);
-        String n1=editText.getText().toString();
-        EditText editText1=findViewById(R.id.et2);
-        String n2=editText1.getText().toString();
-        num1=Integer.parseInt(n1);
-        num2=Integer.parseInt(n2);
-        editText2=findViewById(R.id.et3);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -36,9 +28,79 @@ private int num2;
     }
     public void add(View view)
     {
+        EditText editText=findViewById(R.id.et1);
+        String n1=editText.getText().toString();
+        EditText editText1=findViewById(R.id.et2);
+        String n2=editText1.getText().toString();
+        num1=Integer.parseInt(n1);
+        num2=Integer.parseInt(n2);
+        editText2=findViewById(R.id.et3);
         int s=num1+num2;
+        editText.setText("");
+        editText1.setText("");
         String sum=String.valueOf(s);
         editText2.setText(sum);
     }
-    
+    public void sub(View view)
+    {
+        EditText editText=findViewById(R.id.et1);
+        String n1=editText.getText().toString();
+        EditText editText1=findViewById(R.id.et2);
+        String n2=editText1.getText().toString();
+        num1=Integer.parseInt(n1);
+        num2=Integer.parseInt(n2);
+        editText2=findViewById(R.id.et3);
+        int s=num1-num2;
+        editText.setText("");
+        editText1.setText("");
+        String sub=String.valueOf(s);
+        editText2.setText(sub);
+    }
+    public void mul(View view)
+    {
+        EditText editText=findViewById(R.id.et1);
+        String n1=editText.getText().toString();
+        EditText editText1=findViewById(R.id.et2);
+        String n2=editText1.getText().toString();
+        num1=Integer.parseInt(n1);
+        num2=Integer.parseInt(n2);
+        editText2=findViewById(R.id.et3);
+        int m=num1*num2;
+        editText.setText("");
+        editText1.setText("");
+        String mul=String.valueOf(m);
+        editText2.setText(mul);
+    }
+    public void div(View view)
+    {
+        if(num2==0)
+        {
+            EditText editText=findViewById(R.id.et1);
+            String n1=editText.getText().toString();
+            EditText editText1=findViewById(R.id.et2);
+            String n2=editText1.getText().toString();
+            num1=Integer.parseInt(n1);
+            num2=Integer.parseInt(n2);
+            editText2=findViewById(R.id.et3);
+            String div="ERROR! Division by Zero not possible";
+            editText.setText("");
+            editText1.setText("");
+            editText2.setText(div);
+        }
+        else
+        {
+            EditText editText=findViewById(R.id.et1);
+            String n1=editText.getText().toString();
+            EditText editText1=findViewById(R.id.et2);
+            String n2=editText1.getText().toString();
+            num1=Integer.parseInt(n1);
+            num2=Integer.parseInt(n2);
+            editText2=findViewById(R.id.et3);
+            int d=num1/num2;
+            editText.setText("");
+            editText1.setText("");
+            String div=String.valueOf(d);
+            editText2.setText(div);
+        }
+    }
 }
