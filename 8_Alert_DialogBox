@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat;
 import android.content.DialogInterface;
 import androidx.appcompat.app.AlertDialog;
 import android.view.View;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                Toast.makeText(MainActivity.this,"You have clicked 'Yes'.",Toast.LENGTH_LONG).show();
             }
         });
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
