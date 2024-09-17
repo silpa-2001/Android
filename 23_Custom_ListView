@@ -1,0 +1,48 @@
+package com.example.a23_custom_listview;
+
+import android.os.Bundle;
+
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import android.widget.Toast;
+import android.widget.ListView;
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+    private ListView listView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+
+        listView=findViewById(R.id.lv);
+        ArrayList<Dishes> dishesArrayList=new ArrayList<>();
+        dishesArrayList.add(new Dishes(R.drawable.burger,"Burger","Rs. 150"));
+        dishesArrayList.add(new Dishes(R.drawable.fired_chicken,"Fried Chicken","Rs. 200"));
+        dishesArrayList.add(new Dishes(R.drawable.pizza,"Pizza","Rs. 250"));
+        dishesArrayList.add(new Dishes(R.drawable.spaghetti,"Spaghetti","Rs. 180"));
+        dishesArrayList.add(new Dishes(R.drawable.waffle,"Waffles","Rs. 120"));
+        dishesArrayList.add(new Dishes(R.drawable.chocolate_shake,"Chocolate Shake","Rs. 100"));
+        dishesArrayList.add(new Dishes(R.drawable.cold_coffee,"Cold Coffee","Rs. 90"));
+        dishesArrayList.add(new Dishes(R.drawable.cold_drinks,"Cold Drinks","Rs. 60"));
+        DishAdapter adapter=new DishAdapter(this,dishesArrayList);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener((adapterView, view, i, l) -> {
+            Dishes sel=(Dishes) adapterView.getItemAtPosition(i);
+            Toast.makeText(MainActivity.this,"Clicked: "+sel.toString(),Toast.LENGTH_LONG).show();
+        });
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+    }
+}
