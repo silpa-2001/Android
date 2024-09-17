@@ -1,0 +1,37 @@
+package com.example.a23_custom_listview;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
+
+public class DishAdapter extends ArrayAdapter<Dishes> {
+    public DishAdapter(Context context, ArrayList<Dishes> dishes) {
+        super(context, 0, dishes);
+    }
+
+    @NonNull
+    @Override
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        if(convertView==null)
+        {
+            convertView= LayoutInflater.from(getContext()).inflate(R.layout.list_items,parent,false);
+        }
+        Dishes dishes=getItem(position);
+        ImageView imageView=convertView.findViewById(R.id.imageView);
+        TextView textView=convertView.findViewById(R.id.textView2);
+        TextView priceText=convertView.findViewById(R.id.textSub2);
+        imageView.setImageResource(dishes.getImage());
+        textView.setText(dishes.getName());
+        priceText.setText(dishes.getPrice());
+        return convertView;
+    }
+}
