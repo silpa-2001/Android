@@ -1,0 +1,76 @@
+package com.example.a26_progressbar;
+
+import android.os.Bundle;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+//import statement
+import android.widget.TextView;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.Button;
+
+public class MainActivity extends AppCompatActivity {
+    //before onCreate
+    private TextView progressText;
+    private Button button;
+    private ProgressBar progressBar;
+    private int progress=0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+//inside onCreate
+        progressText=findViewById(R.id.textView);
+        button=findViewById(R.id.button);
+        progressBar=findViewById(R.id.progressBar);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+    }
+    //outside onCreate
+    public void start(View view)
+    {
+        button.setEnabled(false);
+        progressBar.setVisibility(View.VISIBLE);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(progress=0;progress<=100;progress++)
+                {
+                    try {
+                        Thread.sleep(500);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setProgress(progress);
+                            progressText.setText("Progress: "+progress+"%");
+                        }
+                    });
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        button.setEnabled(true);
+                        progressText.setText("COMPLETE");
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
+            }
+        }).start();
+    }
+}
