@@ -1,0 +1,78 @@
+package com.example.a27_asynctask;
+
+import android.os.Bundle;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+//import statement
+import android.widget.TextView;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.view.View;
+import android.os.AsyncTask;
+
+public class MainActivity extends AppCompatActivity {
+    //before onCreate
+    private TextView textView;
+    private Button button;
+    private ProgressBar progressBar;
+    private int progress=0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+//inside onCreate
+        textView=findViewById(R.id.textView);
+        button=findViewById(R.id.button);
+        progressBar=findViewById(R.id.progressBar2);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+    }
+    //outside onCreate
+    public void start(View view)
+    {
+        NewClass obj=new NewClass();
+        obj.execute();
+    }
+    private class NewClass extends AsyncTask<Void,Integer,String>{
+        protected void onPreExecute()
+        {
+            button.setEnabled(false);
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            for(progress=0;progress<=100;progress++)
+            {
+                try {
+                    Thread.sleep(500);
+                    publishProgress(progress);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return "COMPLETED";
+        }
+        protected void onProgressUpdate(Integer...progress)
+        {
+            progressBar.setProgress(progress[0]);
+            textView.setText("Progress: "+progress[0]+"%");
+        }
+        protected void onPostExecute(String result)
+        {
+            button.setEnabled(true);
+            textView.setText(result);
+            progressBar.setVisibility(View.GONE);
+        }
+    }
+}
