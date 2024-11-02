@@ -1,0 +1,65 @@
+package com.example.a14_radiobuttons_checkboxes;
+
+import android.os.Bundle;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+//import statement
+import android.widget.Toast;
+import android.widget.RadioGroup;
+import android.widget.RadioButton;
+import android.widget.CheckBox;
+
+public class MainActivity extends AppCompatActivity {
+    //before onCreate
+    private RadioGroup radioGroup;
+    private RadioButton rbMale,rbFemale;
+    private CheckBox cbEnglish,cbMalayalam,cbHindi;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+//inside onCreate
+        radioGroup=findViewById(R.id.radio);
+        rbMale=findViewById(R.id.radioButton);
+        rbFemale=findViewById(R.id.radioButton2);
+        cbEnglish=findViewById(R.id.checkBox);
+        cbMalayalam=findViewById(R.id.checkBox2);
+        cbHindi=findViewById(R.id.checkBox3);
+        radioGroup.setOnCheckedChangeListener((radioGroup1, i) -> {
+            String selectedGender="";
+            if(i==R.id.radioButton)
+            {
+                selectedGender="Male";
+            }
+            else if (i==R.id.radioButton2)
+            {
+                selectedGender="Female";
+            }
+            Toast.makeText(MainActivity.this,"Selected Gender: "+selectedGender,Toast.LENGTH_LONG).show();
+        });
+        cbEnglish.setOnCheckedChangeListener((compoundButton, b) -> {
+            String msg= b ? "English Selected":"English Deselected";
+            Toast.makeText(MainActivity.this,msg,Toast.LENGTH_LONG).show();
+        });
+        cbMalayalam.setOnCheckedChangeListener((compoundButton, b) -> {
+            String msg=b? "Malayalam Selected":"Malayalam Deselected";
+            Toast.makeText(MainActivity.this,msg,Toast.LENGTH_LONG).show();
+        });
+        cbHindi.setOnCheckedChangeListener((compoundButton, b) -> {
+            String msg=b?"Hindi Selected":"Hindi Deselected";
+            Toast.makeText(MainActivity.this,msg,Toast.LENGTH_LONG).show();
+        });
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+    }
+}
