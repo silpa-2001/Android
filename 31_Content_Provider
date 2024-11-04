@@ -1,0 +1,116 @@
+package com.example.database;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.os.Bundle;
+//import statement
+import android.widget.EditText;
+import android.view.View;
+import android.widget.Toast;
+import android.widget.TextView;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class MainActivity extends AppCompatActivity {
+    //before onCreate
+    private EditText name,course,sem;
+    private DBHelper dbHelper;
+    private TextView textView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+//inside onCreate
+        name=findViewById(R.id.et1);
+        course=findViewById(R.id.et2);
+        sem=findViewById(R.id.et3);
+        textView=findViewById(R.id.textView);
+        dbHelper=new DBHelper(MainActivity.this);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+    }
+//outside onCreate
+    public void addStudent(View view)
+    {
+        String studentName=name.getText().toString();
+        String studentCourse=course.getText().toString();
+        int studentSem=Integer.parseInt(sem.getText().toString());
+        dbHelper.addStudent(studentName,studentCourse,studentSem);
+        if (studentName.equals("")||studentCourse.equals("")||sem.equals(""))
+        {
+            Toast.makeText(MainActivity.this,"All Fields should be filled",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ContentValues values=new ContentValues();
+        values.put("name",studentName);
+        values.put("course",studentCourse);
+        values.put("sem",studentSem);
+        getContentResolver().insert(MyContentProvider.CONTENT_URI,values);
+
+        Toast.makeText(MainActivity.this,"Student added",Toast.LENGTH_SHORT).show();
+        name.setText("");
+        course.setText("");
+        sem.setText("");
+    }
+
+    public void findStudent(View view)
+    {
+        Cursor cursor=getContentResolver().query(MyContentProvider.CONTENT_URI,null,null,null,null);
+        if (cursor.moveToFirst())
+        {
+            StringBuilder stringBuilder=new StringBuilder();
+            while (!cursor.isAfterLast())
+            {
+                int id=Integer.parseInt(cursor.getString(0));
+                String name=cursor.getString(1);
+                String course=cursor.getString(2);
+                int sem=Integer.parseInt(cursor.getString(3));
+                stringBuilder.append("ID: ").append(id);
+                stringBuilder.append("Name: ").append(name);
+                stringBuilder.append("Course: ").append(course);
+                stringBuilder.append("Semester: ").append(sem).append("\n");
+                cursor.moveToNext();
+            }
+            textView.setText(stringBuilder);
+        }
+        else
+        {
+            textView.setText("No Students Found...");
+        }
+    }
+
+    public void updateStudent(View view)
+    {
+        String studentName= name.getText().toString();
+        String studentCourse=course.getText().toString();
+        int studentSem=Integer.parseInt(sem.getText().toString());
+        dbHelper.updateStudent(studentName,studentCourse,studentSem);
+        Toast.makeText(MainActivity.this,"Student updated",Toast.LENGTH_SHORT).show();
+        name.setText("");
+        course.setText("");
+        sem.setText("");
+    }
+
+    public void deleteStudent(View view)
+    {
+        String studentName=name.getText().toString();
+        Boolean result=dbHelper.deleteStudent(studentName);
+        if (result)
+        {
+            Toast.makeText(MainActivity.this,"Student Deleted!",Toast.LENGTH_SHORT).show();
+            name.setText("");
+            course.setText("");
+            sem.setText("");
+        }
+    }
+}
