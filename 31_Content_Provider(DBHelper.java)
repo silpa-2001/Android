@@ -1,0 +1,98 @@
+package com.example.database;
+//import statement
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+
+public class DBHelper extends SQLiteOpenHelper {
+    public static final String DB_NAME="student_db";
+    public static final int DB_VERSION=1;
+    public static final String STUDENT_TABLE="student";
+    public static final String COLUMN_ID="id";
+    public static final String COLUMN_NAME="name";
+    public static final String COLUMN_COURSE="course";
+    public static final String COLUMN_SEM="sem";
+
+    public DBHelper(Context context) {
+        super(context,DB_NAME,null,DB_VERSION);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        String query="CREATE TABLE "+STUDENT_TABLE+"("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT,"+COLUMN_NAME+" TEXT,"+COLUMN_COURSE+" TEXT,"+COLUMN_SEM+" INTEGER)";
+        db.execSQL(query);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS "+STUDENT_TABLE);
+        onCreate(db);
+    }
+
+    public void addStudent(String name,String course,int sem)
+    {
+        SQLiteDatabase sqlDB= this.getWritableDatabase();
+        ContentValues values= new ContentValues();
+        values.put(COLUMN_NAME,name);
+        values.put(COLUMN_COURSE,course);
+        values.put(COLUMN_SEM,sem);
+        sqlDB.insert(STUDENT_TABLE,null,values);
+        sqlDB.close();
+    }
+
+    public Student searchStudent(String studentName)
+    {
+        SQLiteDatabase database=this.getWritableDatabase();
+        Cursor cursor=database.rawQuery("SELECT * FROM "+STUDENT_TABLE+" where "+COLUMN_NAME+"=?",new String[]{studentName});
+        Student student=new Student();
+        if (cursor.moveToFirst())
+        {
+            cursor.moveToFirst();
+            student.setId(Integer.parseInt(cursor.getString(0)));
+            student.setName(cursor.getString(1));
+            student.setCourse(cursor.getString(2));
+            student.setSem(Integer.parseInt(cursor.getString(3)));
+            cursor.close();
+        }
+        else
+        {
+            student=null;
+        }
+        database.close();
+        return student;
+    }
+
+    public void updateStudent(String name,String course,int sem)
+    {
+        SQLiteDatabase db=this.getWritableDatabase();
+        ContentValues values=new ContentValues();
+        values.put(COLUMN_NAME,name);
+        values.put(COLUMN_COURSE,course);
+        values.put(COLUMN_SEM,sem);
+        db.update(STUDENT_TABLE,values,COLUMN_NAME+"=?",new String[]{name});
+        db.close();
+    }
+
+    public boolean deleteStudent(String name)
+    {
+        Boolean result=false;
+        SQLiteDatabase db=this.getWritableDatabase();
+        Cursor cursor= db.rawQuery("SELECT * FROM "+STUDENT_TABLE+" WHERE "+COLUMN_NAME+"=?",new String[]{name});
+        Student student= new Student();
+        if (cursor.moveToFirst())
+        {
+            //student.setId(Integer.parseInt(cursor.getString(0)));
+            int row=db.delete(STUDENT_TABLE,COLUMN_NAME+"=?",new String[]{name});
+            if (row>0)
+            {
+                result= true;
+            }
+        }
+        cursor.close();
+        db.close();
+        return result;
+    }
+}
