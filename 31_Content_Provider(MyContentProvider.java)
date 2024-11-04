@@ -1,0 +1,96 @@
+package com.example.database;
+
+import android.content.ContentProvider;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.net.Uri;
+
+//import statement
+import android.content.ContentUris;
+import android.content.UriMatcher;
+import android.database.sqlite.SQLiteDatabase;
+
+public class MyContentProvider extends ContentProvider {
+    static final String AUTHORITY="com.example.database.provider";
+    public static final Uri CONTENT_URI=Uri.parse("content://"+AUTHORITY+"/"+DBHelper.STUDENT_TABLE);
+    private static final int STUDENTS=1;
+    private static final int STUDENT_ID=2;
+    private static final UriMatcher uriMatcher=new UriMatcher(UriMatcher.NO_MATCH);
+    static {
+        uriMatcher.addURI(AUTHORITY,DBHelper.STUDENT_TABLE,STUDENTS);
+        uriMatcher.addURI(AUTHORITY,DBHelper.STUDENT_TABLE+"/#",STUDENT_ID);
+    }
+    private DBHelper dbHelper;
+
+    public MyContentProvider() {
+    }
+
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        SQLiteDatabase db=dbHelper.getWritableDatabase();
+        int rowsDeleted=db.delete(DBHelper.STUDENT_TABLE,selection,selectionArgs);
+        getContext().getContentResolver().notifyChange(uri,null);
+        return rowsDeleted;
+    }
+
+    @Override
+    public String getType(Uri uri) {
+        int match=uriMatcher.match(uri);
+        switch (match)
+        {
+            case STUDENTS:
+                return "vnd.android.cursor.dir/"+AUTHORITY+"."+DBHelper.STUDENT_TABLE;
+            case STUDENT_ID:
+                return "vnd.android.cursor.item/"+AUTHORITY+"."+DBHelper.STUDENT_TABLE;
+            default:
+                throw new IllegalArgumentException("Unknown uri: "+uri);
+        }
+    }
+
+    @Override
+    public Uri insert(Uri uri, ContentValues values) {
+        SQLiteDatabase db=dbHelper.getWritableDatabase();
+        long id=db.insert(DBHelper.STUDENT_TABLE,null,values);
+        Uri newUri= ContentUris.withAppendedId(CONTENT_URI,id);
+        getContext().getContentResolver().notifyChange(newUri,null);
+        return newUri;
+    }
+
+    @Override
+    public boolean onCreate() {
+        dbHelper=new DBHelper(getContext());
+        return true;
+    }
+
+    @Override
+    public Cursor query(Uri uri, String[] projection, String selection,
+                        String[] selectionArgs, String sortOrder) {
+        SQLiteDatabase db=dbHelper.getReadableDatabase();
+        Cursor cursor;
+        int match=uriMatcher.match(uri);
+        switch (match)
+        {
+            case STUDENTS:
+                cursor=db.query(DBHelper.STUDENT_TABLE,projection,selection,selectionArgs,null,null,sortOrder);
+                break;
+            case STUDENT_ID:
+                selection=DBHelper.COLUMN_ID+"=?";
+                selectionArgs=new String[]{String.valueOf(ContentUris.parseId(uri))};
+                cursor=db.query(DBHelper.STUDENT_TABLE,projection,selection,selectionArgs,null,null,sortOrder);
+                break;
+            default:
+                throw  new IllegalArgumentException("Unknown URI: "+uri);
+        }
+        cursor.setNotificationUri(getContext().getContentResolver(),uri);
+        return cursor;
+    }
+
+    @Override
+    public int update(Uri uri, ContentValues values, String selection,
+                      String[] selectionArgs) {
+        SQLiteDatabase db= dbHelper.getWritableDatabase();
+        int rowsUpdated=db.update(DBHelper.STUDENT_TABLE,values,selection,selectionArgs);
+        getContext().getContentResolver().notifyChange(uri,null);
+        return rowsUpdated;
+    }
+}
