@@ -1,0 +1,63 @@
+package com.example.a30_login_registration;
+
+import android.os.Bundle;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+//import statement
+import android.view.View;
+import android.widget.Toast;
+import android.widget.EditText;
+import android.content.Intent;
+
+public class LoginActivity extends AppCompatActivity {
+//before onCreate
+    private EditText edit4,edit5;
+    private DBHandler dbHandler;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_login);
+//inside onCreate
+        edit4=findViewById(R.id.editTextText4);
+        edit5=findViewById(R.id.editTextText5);
+        dbHandler=new DBHandler(LoginActivity.this);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+    }
+//outside onCreate
+    public void loginCheck(View view)
+    {
+        String username=edit4.getText().toString();
+        String password=edit5.getText().toString();
+        if (edit4.equals("")||edit5.equals(""))
+        {
+            Toast.makeText(LoginActivity.this,"All Fields are mandatory",Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Boolean check=dbHandler.checkUsernamePassword(username,password);
+            if (check)
+            {
+                Toast.makeText(LoginActivity.this,username+" Login Successful!",Toast.LENGTH_SHORT).show();
+                Intent intent=new Intent(LoginActivity.this, SuccessfulLoginActivity.class);
+                intent.putExtra("USERNAME",username);
+                startActivity(intent);
+            }
+            else
+            {
+                Toast.makeText(LoginActivity.this,"Failed to Login",Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+}
