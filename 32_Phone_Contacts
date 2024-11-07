@@ -1,0 +1,94 @@
+package com.example.a32_phone_contacts;
+
+import android.os.Bundle;
+
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+//import statement
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.ContactsContract;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends AppCompatActivity {
+//before onCreate
+    private static final int REQUEST_CONTACTS_PERMISSION=1;
+    TextView textView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+//inside onCreate
+        textView=findViewById(R.id.textView);
+        if (ContextCompat.checkSelfPermission(this,Manifest.permission.READ_CONTACTS)!=PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_CONTACTS},REQUEST_CONTACTS_PERMISSION);
+        }
+        else
+        {
+            loadContacts();
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+    }
+//outside onCreate
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode==REQUEST_CONTACTS_PERMISSION)
+        {
+            if (grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED)
+            {
+                loadContacts();
+            }
+            else
+            {
+                Toast.makeText(MainActivity.this,"Permission denied",Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void loadContacts()
+    {
+        Uri uri=ContactsContract.Contacts.CONTENT_URI;
+        String[] projection={
+                ContactsContract.Contacts._ID,
+                ContactsContract.Contacts.DISPLAY_NAME
+        };
+        Cursor cursor=getContentResolver().query(uri,projection,null,null,null);
+        if(cursor.moveToFirst())
+        {
+            StringBuilder stringBuilder=new StringBuilder();
+            while (!cursor.isAfterLast())
+            {
+                int id=Integer.parseInt(cursor.getString(0));
+                String name=cursor.getString(1);
+                stringBuilder.append("CONTACT ID: ").append(id);
+                stringBuilder.append("CONTACT NAME: ").append(name).append("\n");
+                cursor.moveToNext();
+            }
+            textView.setText(stringBuilder);
+        }
+        else
+        {
+            textView.setText("No Contact Found...");
+        }
+    }
+}
