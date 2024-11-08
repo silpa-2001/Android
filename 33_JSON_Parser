@@ -1,0 +1,62 @@
+package com.example.a33_json_parser;
+
+import android.os.Bundle;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+//import statement
+import android.widget.TextView;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class MainActivity extends AppCompatActivity {
+//before onCreate
+    private TextView textView,textView2;
+    public static final String JSON_STRING="{\"employee\":{\"name\":\"Sachin\",\"salary\":56000}}";
+    public static final String JSON_ARRAY="{ \"Employee\" :[{\"id\":101,\"name\":\"Sonoo Jaiswal\",\"salary\":50000}," +
+            "{\"id\":102,\"name\":\"Vimal Jaiswal\",\"salary\":60000}] }";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+
+        textView=findViewById(R.id.tv_1);
+        textView2=findViewById(R.id.tv_2);
+        try {
+            JSONObject emp=(new JSONObject(JSON_STRING)).getJSONObject("employee");
+            String name=emp.getString("name");
+            int salary=emp.getInt("salary");
+            String str="Employee Name: "+name+"\n"+"Employee Salary: "+salary;
+            textView.setText(str);
+
+            String data="";
+            JSONObject array_obj=(new JSONObject(JSON_ARRAY));
+            JSONArray jsonArray=array_obj.optJSONArray("Employee");
+            for (int i=0;i<jsonArray.length();i++)
+            {
+                JSONObject jsonObject=jsonArray.getJSONObject(i);
+                int id=jsonObject.getInt("id");
+                String e_name=jsonObject.getString("name");
+                int e_salary=jsonObject.getInt("salary");
+                data=data+ " Node: "+i+" ID: "+id+" Name: "+name+" Salary: "+salary+"\n";
+            }
+            textView2.setText(data);
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+    }
+}
